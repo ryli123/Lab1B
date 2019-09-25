@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <fstream>
 #include "header.h"
 
 using namespace std;
@@ -25,11 +26,25 @@ double prompt(string s) {
 	return x;
 }
 
+// testing in 1d
+void onedimension() {
+	double mass1 = 1, mass2 = 1;
+	double rad = 1;
+	double sx1, sx2, scx1, scx2;
+
+	double v1 = 5, v2 = 8;
+	int increm = 0.001; // default increment
+
+	// have to use compression to find when it bounces back
+}
+
 int main() {
 	// mass, radius, positions + collision positions
 	double mass1 = 1, mass2 = 1;	// default value
-	double rad = 3.14;				// default values
+	double rad = 1;				// default values
 	double sx1, sy1, sx2, sy2, scx1, scy1, scx2, scy2;
+	ofstream table; // for csv record of data
+
 
 
 	return 0;

@@ -26,6 +26,16 @@ double prompt(string s) {
 	return x;
 }
 
+// helper method to evaluate collision
+bool almostSame(float a, float b, float epsilon) {
+	return fabs(a - b) <= ((fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);
+}
+
+// checks if positions are same --> collided
+bool collided(double sx1, double sx2) {
+	return almostSame(sx1, sx2, 1e-8);
+}
+
 // testing in 1d
 void onedimension() {
 	double mass1 = 1, mass2 = 1;
@@ -33,9 +43,9 @@ void onedimension() {
 	double sx1, sx2, scx1, scx2;
 
 	double v1 = 1, v2 = 0;
-	int increm = 0.001; // default increment .001 s
+	double t = 0, increm = 0.001; // default increment .001 s
 
-	while (true) {
+	while (false) {
 
 	}
 

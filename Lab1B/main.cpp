@@ -32,10 +32,11 @@ void onedimension() {
 	double rad = 1;
 	double sx1, sx2, scx1, scx2;
 
-	double v1 = 5, v2 = 8;
-	int increm = 0.001; // default increment
+	double v1 = 1, v2 = 0;
+	int increm = 0.001; // default increment .001 s
 
-	// have to use compression to find when it bounces back
+	// have to use compression to find bounce back
+	// last night took an L but tonight I bounce back
 }
 
 int main() {

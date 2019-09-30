@@ -35,6 +35,10 @@ void onedimension() {
 	double v1 = 1, v2 = 0;
 	int increm = 0.001; // default increment .001 s
 
+	while (true) {
+
+	}
+
 	// have to use compression to find bounce back
 	// last night took an L but tonight I bounce back
 }

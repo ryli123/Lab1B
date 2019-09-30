@@ -33,21 +33,43 @@ bool almostSame(float a, float b, float epsilon) {
 
 // checks if positions are same --> collided
 bool collided(double sx1, double sx2) {
-	return almostSame(sx1, sx2, 1e-8);
+	return almostSame(sx1, sx2, 1e-3);
 }
 
 // testing in 1d
 void onedimension() {
 	double mass1 = 1, mass2 = 1;
 	double rad = 1;
-	double sx1, sx2, scx1, scx2;
+	double sx1 = 12, sx2 = 321;
+	double v1 = 17, v2 = -16;
+	double t = 0, tinc = 0.001, printinc = 0, tcollision = 3000; // default increment .001 s
+	bool collision = false;
 
-	double v1 = 1, v2 = 0;
-	double t = 0, increm = 0.001; // default increment .001 s
+	// simulation with increment increm
+	do {
+		t += tinc;
+		printinc++;
 
-	while (false) {
+		// check collided
+		if (collided(sx1, sx2) && !collision) {
+			collision = true;
+			cout << "\nCollided.\n";
 
-	}
+			tcollision = t;
+			v1 = (mass1 - mass2) * v1 / (mass1 + mass2) + 2 * mass1 * v2 / (mass1 + mass2);
+			v2 = (mass1 - mass2) * v2 / (mass1 + mass2) + 2 * mass1 * v1 / (mass1 + mass2);
+		}
+		
+		sx1 += v1 * tinc;
+		sx2 += v2 * tinc;
+
+		if (printinc == 10) {
+			cout << "s1: " << sx1 << "\ns2: " << sx2 << '\n';
+
+			printinc = 0;
+		}
+
+	} while (t < tcollision + 1);
 
 	// have to use compression to find bounce back
 	// last night took an L but tonight I bounce back
@@ -60,8 +82,7 @@ int main() {
 	double sx1, sy1, sx2, sy2, scx1, scy1, scx2, scy2;
 	ofstream table; // for csv record of data
 
-
+	onedimension();
 
 	return 0;
 }
-// austin first edit

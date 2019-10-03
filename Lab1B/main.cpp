@@ -196,9 +196,11 @@ void springcollision() {
 
 		// check if collided
 		if (spherecollided2d(s1x, s1y, s2x, s2y, radius)) {
-			if (!collided) { cout << "\nCollided.\n"; }
-			collision = true;
-			tcollision = t;
+			if (!collision) { 
+				cout << "\nCollided.\n"; 
+				tcollision = t;
+				collision = true;
+			}
 			
 			// assuming that both balls are compressed the same amount
 			compression = (2 * radius - findMagnitude(s1x, s1y, s2x, s2y)) / 2;

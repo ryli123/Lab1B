@@ -45,10 +45,10 @@ void springcollision() {
 	double compression = 0;
 
 	double m1 = 1, m2 = 1;
-	double s1x = -3, s1y = -4;
-	double s2x = -3, s2y = 4;
-	double v1x = 18, v1y = 24;
-	double v2x = 18, v2y = -24;
+	double s1x = -3, s1y = 4;
+	double s2x = -3, s2y = -4;
+	double v1x = 4, v1y = -6;
+	double v2x = 4, v2y = 6;
 	double radius = 1;
 	double tinc = 0.001;
 
@@ -59,11 +59,6 @@ void springcollision() {
 		t += tinc;
 		printinc++;
 
-		s1x += v1x * tinc;
-		s1y += v1y * tinc;
-		s2x += v2x * tinc;
-		s2y += v2y * tinc;
-
 		// check if collided
 		if (spherecollided2d(s1x, s1y, s2x, s2y, radius)) {
 			if (!collision) {
@@ -71,21 +66,26 @@ void springcollision() {
 				tcollision = t;
 				collision = true;
 			}
+			// take current position to test direction of spring force
+			double s1xc = s1x, s1yc = s1y, s2xc = s2x, s2yc = s2y;
 
-			s1x += 0.5 * F_s(v1x-v2x, compression) * tinc * tinc;
-			s1y += 0.5 * F_s(v1y-v2y, compression) * tinc * tinc;
-			s2x += 0.5 * F_s(v2x-v1x, compression) * tinc * tinc;
-			s2y += 0.5 * F_s(v2y-v2x, compression) * tinc * tinc;
+			s1x += 0.5 * F_s(s1xc-s2xc, compression) / m1 * tinc * tinc;
+			s1y += 0.5 * F_s(s1yc-s2yc, compression) / m1 * tinc * tinc;
+			s2x += 0.5 * F_s(s2xc-s1xc, compression) / m2 * tinc * tinc;
+			s2y += 0.5 * F_s(s2yc-s1yc, compression) / m2 * tinc * tinc;
 
 			// assuming that both balls are compressed the same amount
-			compression = (2 * radius - findMagnitude(s1x, s1y, s2x, s2y)) / 2;
-			v1x = v1x + tinc * F_s(v1x-v2x, compression) / m1;
-			v1y = v1y - tinc * F_s(v1y-v2y, compression) / m1;
-			v2x = v2x + tinc * F_s(v1x-v2x, compression) / m2;
-			v2y = v2y - tinc * F_s(v1y-v2y, compression) / m2;
-
+			compression = (findMagnitude(s1x, s1y, s2x, s2y) - 2 * radius) / 2;
+			v1x += tinc * F_s(s1xc-s2xc, compression) / m1;
+			v1y += tinc * F_s(s1yc-s2yc, compression) / m1;
+			v2x += tinc * F_s(s2xc-s1xc, compression) / m2;
+			v2y += tinc * F_s(s2yc-s1yc, compression) / m2;
 		}
 
+		s1x += v1x * tinc;
+		s1y += v1y * tinc;
+		s2x += v2x * tinc;
+		s2y += v2y * tinc;
 
 		if (printinc == 10) {
 			cout << "time: " << t << "seconds\n";

@@ -90,8 +90,7 @@ void springcollision() {
 		if (printinc == 10) {
 			cout << "time: " << t << "seconds\n";
 			cout << "s1: " << s1x << ", " << s1y << "\ns2: " << s2x << ", " << s2y << '\n';
-			cout << "total velocity: " << (v1x + v1y + v2x + v2y) << '\n';
-			//cout << "total velocity magnitudes: " << (sqrt(pow(v1x,2) + pow(v1y,2)) + sqrt(pow(v2x, 2) + pow(v2y, 2))) << '\n';
+			cout << "v1: " << v1x << ", " << v1y << "\nv2: " << v2x << ", " << v2y << '\n';
 			cout << "distance: " << findMagnitude(s1x, s1y, s2x, s2y) << '\n';
 
 			printinc = 0;
@@ -101,10 +100,6 @@ void springcollision() {
 }
 
 int main() {
-	// mass, radius, positions + collision positions
-	double mass1 = 1, mass2 = 1;	// default value
-	double rad = 1;				// default values
-	double sx1, sy1, sx2, sy2, scx1, scy1, scx2, scy2;
 	ofstream table; // for csv record of data
 
 	//onedimension();

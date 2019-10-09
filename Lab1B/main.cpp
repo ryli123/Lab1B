@@ -91,6 +91,7 @@ void springcollision() {
 			cout << "time: " << t << "seconds\n";
 			cout << "s1: " << s1x << ", " << s1y << "\ns2: " << s2x << ", " << s2y << '\n';
 			cout << "total velocity: " << (v1x + v1y + v2x + v2y) << '\n';
+			//cout << "total velocity magnitudes: " << (sqrt(pow(v1x,2) + pow(v1y,2)) + sqrt(pow(v2x, 2) + pow(v2y, 2))) << '\n';
 			cout << "distance: " << findMagnitude(s1x, s1y, s2x, s2y) << '\n';
 
 			printinc = 0;

@@ -45,9 +45,9 @@ void springcollision() {
 	double compression = 0;
 
 	double m1 = 1, m2 = 1;
-	double s1x = -3, s1y = 4;
+	double s1x = 3, s1y = -4;
 	double s2x = -3, s2y = -4;
-	double v1x = 4, v1y = -6;
+	double v1x = -4, v1y = 6;
 	double v2x = 4, v2y = 6;
 	double radius = 1;
 	double tinc = 0.001;
@@ -102,8 +102,6 @@ void springcollision() {
 int main() {
 	ofstream table; // for csv record of data
 
-	//onedimension();
-	//twodimension();
 	springcollision();
 
 

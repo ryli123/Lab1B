@@ -84,9 +84,9 @@ double findtinc(double s_magnitude, double v_magnitude) {
 	 * minute and allows for high resolution of the balls' movements when in contact. */
 	double dt = s_magnitude / v_magnitude / 500;
 	
-	if (dt > 0.001)		// set upper bound 
+	if (dt > 0.001)			// upper bound 
 		dt = 0.001;
-	else if (dt < 0.00001)
+	else if (dt < 0.00001)	// lower bound
 		dt = 0.00001;
 
 	return dt;
@@ -114,15 +114,11 @@ void springcollision() {
 	double v2x = 0, v2y = 0;
 
 	double tinc = 0.001;	// default time increment
-	double t = 0, printinc = 9;	// print only every 9 seconds
+	double t = 0, printinc = 10;	// prints when printinc = 10;
 	double tcollision = 3000;
 	bool collision = false;
 
 	do {
-		tinc = findtinc(findMagnitude(s1x, s1y, s2x, s2y), findMagnitude(v1x, v1y, v2x, v2y));
-		t += tinc;
-		printinc++;
-
 		// check if collided
 		if (spherecollided2d(s1x, s1y, s2x, s2y, radius)) {
 			
@@ -162,6 +158,9 @@ void springcollision() {
 			printinc = 0;
 		}
 
+		tinc = findtinc(findMagnitude(s1x, s1y, s2x, s2y), findMagnitude(v1x, v1y, v2x, v2y));
+		t += tinc;
+		printinc++;
 	} while (t < tcollision + 1);
 }
 
@@ -248,8 +247,6 @@ void glancingcollision() {
 }
 
 int main() {
-	ofstream table; // for csv record of data
-
 	springcollision();
 	//glancingcollision();
 

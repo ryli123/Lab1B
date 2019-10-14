@@ -89,11 +89,11 @@ void springcollision() {
 	double v2x = 4, v2y = 6;
 	*/
 
-	double m1 = 2, m2 = 6;	// kg
+	double m1 = 5, m2 = 2.5;	// kg
 	double radius = 1;	// m
 	double s1x = 0, s1y = 0;
-	double s2x = 5, s2y = 0;
-	double v1x = 12, v1y = 0;
+	double s2x = 3, s2y = 1;
+	double v1x = 4.5, v1y = 0;
 	double v2x = 0, v2y = 0;
 	double tinc = 0.00002;
 

@@ -17,7 +17,6 @@
 #include <math.h>
 
 #ifndef RUN
-#endif
 
 // the function for the force exerted by the spring, for one dimension
 double F_s(double displacement, double compression) {
@@ -136,3 +135,4 @@ void springcollision() {
 
 	table.close();
 }
+#endif

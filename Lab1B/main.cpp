@@ -20,25 +20,22 @@
 using namespace std;
 const double epsilon = 0.001; // default margin of error
 
-//magnitude for single vector
-double findMagnitude(double x, double y)
-{
+// magnitude for 2D vector
+double findMagnitude(double x, double y) {
 	return (sqrt(x * x + y * y));
 }
 
-//magnitude for 3D vector
-double findMagnitude(double x, double y, double z)
-{
-	return (sqrt(x * x + y * y + z*z));
+// overload; magnitude for 3D vector
+double findMagnitude(double x, double y, double z) {
+	return (sqrt(x * x + y * y + z * z));
 }
 
-// solves for magnitude of displacement with components
+// overload; magnitude of displacement between balls
 double findMagnitude(double s1x, double s1y, double s2x, double s2y) {
-	// Uses the form sqrt(a^2 + b^2)
 	return (sqrt((s1x - s2x) * (s1x - s2x) + (s1y - s2y) * (s1y - s2y)));
 }
 
-//moment of inertia for solid sphere
+// moment of inertia for solid sphere
 double ballMoI(double r, double m)
 {
 	return(2 * m * r * r / 5);

@@ -89,8 +89,8 @@ double findtinc(double distance, double v_magnitude, double radius, bool collide
 
 // finds angle between centre of the balls
 double findAngle(double s1x, double s1y, double s2x, double s2y) {
-	double y = s2y - s1y; //delta y
-	double x = s2x - s1x; //delta x
+	double y = s1y - s2y; //delta y
+	double x = s1x - s2x; //delta x
 	double angle = 0;
 
 	/* Finds the angle using arctan(y/x). However, it must take in special
@@ -114,7 +114,7 @@ double findAngle(double s1x, double s1y, double s2x, double s2y) {
 
 // truncates value to 3 decimal places
 double truncate(double x) {
-	return round(x * 1000) / 1000;
+	return round(x * 10000) / 10000;
 }
 
 // with a spring, using just basic kinematics

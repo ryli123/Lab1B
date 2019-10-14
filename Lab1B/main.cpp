@@ -97,22 +97,22 @@ double findAngle(double s1x, double s1y, double s2x, double s2y) {
 	 * cases; when x = 0 arctan does not function, and in other cases arctan
 	 * will only give the beta value and must be adjusted by some factor of pi. */
 	if (x == 0) {
-		if (y > 0)	// 90 deg
+		if (y > 0)					// 90 deg
 			angle = pi / 2;
-		else if (y < 0)	// 270 deg
+		else if (y < 0)				// 270 deg
 			angle = 3 * pi / 2;
 	} else {
-		if (x < 0)	// quadrants 2 & 3
+		if (x < 0)					// quadrants 2 & 3
 			angle = atan(y / x) + pi;
 		else if (x > 0 && y < 0)	// quadrant 4
 			angle = atan(y / x) + 2 * pi;
-		else if (x > 0 && y > 0)
+		else if (x > 0 && y > 0)	// quadrant 1
 			angle = atan(y / x);
 	}
 	return angle;
 }
 
-// truncates value to 3 decimal places
+// truncates value to 4 decimal places
 double truncate(double x) {
 	return round(x * 10000) / 10000;
 }
@@ -159,7 +159,8 @@ void springcollision() {
 	 * data set to be manipulated and made into graphs. */
 	ofstream table;
 	table.open("springcollision.csv");
-	table << "t,sx1,sy1,sx2,sy2,vx1,vy1,vx2,vy2,distance\n";
+	table << "t,sx1,sy1,sx2,sy2,vx1,vy1,vx2,vy2,distance," 
+		<< "compression, compression_x, compression_y, Fx, Fy\n";
 
 	do {
 		// check if collided
@@ -198,7 +199,7 @@ void springcollision() {
 		s2y += v2y * tinc;
 
 		if (printinc == 10) {
-			table << truncate(t) << ",";		// t
+			table << truncate(t) << ",";	// t
 			table << truncate(s1x) << ","	// displacement
 				<< truncate(s1y) << ","
 				<< truncate(s2x) << ","
@@ -208,6 +209,11 @@ void springcollision() {
 				<< truncate(v2x) << ","
 				<< truncate(v2y) << ",";
 			table << truncate(findMagnitude(s1x, s1y, s2x, s2y)) << ",";	// distance
+			table << compression << ","										// compression/force
+				<< compression * cos(angle1) << ","
+				<< compression * sin(angle1) << ","
+				<< F_s(compression * cos(angle1)) << ","
+				<< F_s(compression * sin(angle1)) << ",";
 			table << "\n";
 
 			printinc = 0;
@@ -316,7 +322,6 @@ void glancingcollision() {
 
 int main() {
 	springcollision();
-	//glancingcollision();
 
 	return 0;
 }

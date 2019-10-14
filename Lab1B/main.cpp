@@ -96,36 +96,27 @@ double findtinc(double s_magnitude, double v_magnitude) {
 void springcollision() {
 	double compression = 0;
 
-	// SI units
-	/*double m1 = 0.0195, m2 = 0.0195;	// kg
-	double radius = 0.0307;	// m
-	double s1x = 3, s1y = -4;
-	double s2x = -3, s2y = -4;
-	double v1x = -4, v1y = 6;
-	double v2x = 4, v2y = 6;
-	*/
-
 	// sample 1d collision with stationary target; SI units
-	double m1 = 2, m2 = 6;
-	double radius = 1;
+	double m1 = 2, m2 = 6;		// default m = 0.0195
+	double radius = 1;			// default r = 0.0307
 	double s1x = 0, s1y = 0;
 	double s2x = 5, s2y = 0;
 	double v1x = 12, v1y = 0;
 	double v2x = 0, v2y = 0;
 
-	double tinc = 0.001;	// default time increment
-	double t = 0, printinc = 10;	// prints when printinc = 10;
-	double tcollision = 3000;
+	double tinc = 0.001;			// default time increment
+	double t = 0, printinc = 10;	// prints when printinc = 10
+	double tcollision = 100;		// changed when object collides
 	bool collision = false;
 
 	do {
 		// check if collided
 		if (spherecollided2d(s1x, s1y, s2x, s2y, radius)) {
-			
+			// checks if this is the first contact between them
 			if (!collision) {
-				cout << "\nCollided.\n";
-				tcollision = t;
-				collision = true;
+				cout << "\nCollided.\n";		// debugging output
+				tcollision = t;					// sets collision time to current
+				collision = true;				// prevents re-collisions
 			}
 			
 			// take current position to test direction of spring force

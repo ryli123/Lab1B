@@ -13,12 +13,11 @@
 #include <cmath>
 #include <fstream>
 #include "header.h"
+#include "Windows.h"
+#include <math.h>
 
 #ifndef RUN
 #endif
-
-#include "Windows.h"
-#include <math.h>
 
 using namespace std;
 constexpr double pi = M_PI;	// renaming M_PI constant to pi (3.14...)
@@ -57,11 +56,16 @@ bool spherecollided2d(double sx1, double sy1, double sx2, double sy2, double rad
 }
 
 // the function for the force exerted by the spring, for one dimension
-double F_s(double vx, double compression) {
-	// for now its just a standard ideal spring, with force given by hooke's law
-	double k = 100; // keep it 100
-	if (vx == 0) { return 0; }
-	else { return (-1) * vx / fabs(vx) * k * compression; }
+double F_s(double displacement, double compression) {
+	// spring function found by regression
+	double k = 11900 * compression + 830;
+
+	if (displacement == 0)
+		return 0;
+	else {
+		int direction = displacement / fabs(displacement);
+		return -1 * direction * k * compression;
+	}
 }
 
 double findTorque(double Fx, double Fy, double rx, double ry)
@@ -74,12 +78,13 @@ double findTorque(double Fx, double Fy, double rx, double ry)
 void springcollision() {
 	double compression = 0;
 
-	double m1 = 1, m2 = 1;
+	// SI units
+	double m1 = 0.0195, m2 = 0.0195;	// kg
+	double radius = 0.0307;	// m
 	double s1x = 3, s1y = -4;
 	double s2x = -3, s2y = -4;
 	double v1x = -4, v1y = 6;
 	double v2x = 4, v2y = 6;
-	double radius = 1;
 	double tinc = 0.001;
 
 	double t = 0, printinc = 9;

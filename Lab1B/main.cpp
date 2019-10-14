@@ -105,13 +105,39 @@ void springcollision() {
 	//double m1 = 5, m2 = 2.5;	// kg
 	//double radius = 1;	// m
 	// sample 1d collision with stationary target; SI units
-	double m1 = 2, m2 = 6;
+
+	//sample 1D
+	/*double m1 = 2, m2 = 6;
 	double radius = 1;
 	double s1x = 0, s1y = 0;
-	double s2x = 3, s2y = 1;
-	double v1x = 4.5, v1y = 0;
+	double s2x = 5, s2y = 0;
+	double v1x = 12, v1y = 0;
 	double v2x = 0, v2y = 0;
 	double tinc = 0.001;
+	Expect v1fx = -6, v2fx as 6 
+	*/
+
+	//sample 2D static target
+	/*double m1 = 2, m2 = 2;
+	double radius = 1;
+	double s1x = 0, s1y = 0;
+	double s2x = 3, s2y = 1.732;
+	double v1x = 2.2, v1y = 0;
+	double v2x = 0, v2y = 0;
+	double tinc = 0.001;
+	Expect v1f to be 1.9, theta = -30, v2fx as 1.1, theta = 60
+	*/
+
+	//sample 2D total
+	double m1 = 2, m2 = 2;
+	double radius = 1;
+	double s1x = -3.83, s1y = 3.214;
+	double s2x = -3.83, s2y = -3.214;
+	double v1x = 3.064, v1y = -2.571;
+	double v2x = 3.064, v2y = 2.571;
+	double tinc = 0.001;
+	//expect symmetry on final velocities
+	
 
 	//double tinc = 0.001;	// default time increment
 	double t = 0, printinc = 10;	// prints when printinc = 10;

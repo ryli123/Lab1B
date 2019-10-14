@@ -58,7 +58,9 @@ bool spherecollided2d(double sx1, double sy1, double sx2, double sy2, double rad
 // the function for the force exerted by the spring, for one dimension
 double F_s(double displacement, double compression) {
 	// spring function found by regression
-	double k = 11900 * compression + 830;
+	//double k = 11900 * compression + 830;
+
+	double k = 1000000;
 
 	if (displacement == 0)
 		return 0;
@@ -93,7 +95,7 @@ void springcollision() {
 	double s2x = 5, s2y = 0;
 	double v1x = 12, v1y = 0;
 	double v2x = 0, v2y = 0;
-	double tinc = 0.001;
+	double tinc = 0.00002;
 
 	double t = 0, printinc = 9;
 	double tcollision = 3000;

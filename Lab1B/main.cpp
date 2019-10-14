@@ -60,10 +60,15 @@ double F_s(double displacement, double compression) {
 	// spring function found by regression
 	double k = 11900 * compression + 830;
 
+	/* Solves for spring force acting on ball using F_s = -kx.
+	 * Solves for one desired component only, and displacement
+	 * is given for the component. If displacement between balls
+	 * is 0, no force in that direction; otherwise, sign of the 
+	 * displacement gives direction of force. */
 	if (displacement == 0)
 		return 0;
 	else {
-		int direction = displacement / fabs(displacement);
+		int direction = displacement / fabs(displacement);	// gives sign
 		return -1 * direction * k * compression;
 	}
 }

@@ -84,12 +84,20 @@ void springcollision() {
 	double compression = 0;
 
 	// SI units
-	double m1 = 0.0195, m2 = 0.0195;	// kg
+	/*double m1 = 0.0195, m2 = 0.0195;	// kg
 	double radius = 0.0307;	// m
 	double s1x = 3, s1y = -4;
 	double s2x = -3, s2y = -4;
 	double v1x = -4, v1y = 6;
 	double v2x = 4, v2y = 6;
+	*/
+
+	double m1 = 2, m2 = 6;	// kg
+	double radius = 1;	// m
+	double s1x = 0, s1y = 0;
+	double s2x = 5, s2y = 0;
+	double v1x = 12, v1y = 0;
+	double v2x = 0, v2y = 0;
 	double tinc = 0.001;
 
 	double t = 0, printinc = 9;
@@ -209,7 +217,8 @@ void glancingcollision() {
 int main() {
 	ofstream table; // for csv record of data
 
-	glancingcollision();
+	springcollision();
+	//glancingcollision();
 
 	return 0;
 }

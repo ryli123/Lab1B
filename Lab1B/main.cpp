@@ -215,6 +215,5 @@ int main() {
 	springcollision();
 	//glancingcollision();
 
-
 	return 0;
 }

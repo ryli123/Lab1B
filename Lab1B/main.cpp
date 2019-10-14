@@ -128,6 +128,17 @@ void springcollision() {
 			v1y += tinc * F_s(s1yc-s2yc, compression) / m1;
 			v2x += tinc * F_s(s2xc-s1xc, compression) / m2;
 			v2y += tinc * F_s(s2yc-s1yc, compression) / m2;
+
+			// changing tinc based on how close it is
+			tinc = findMagnitude(s1x, s1y, s2x, s2y) / findMagnitude(v1x, v1y, v2x, v2y) / 500;
+			if (tinc > 0.001)
+			{
+				tinc = 0.001;
+			}
+			else if (tinc < 0.00001)
+			{
+				tinc = 0.00001;
+			}
 		}
 
 		s1x += v1x * tinc;
@@ -194,6 +205,8 @@ void glancingcollision() {
 			// note that by conservation of angular momentum, m1 * omega1  + m2 * omega2 is invariant
 			omega1 += findTorque(F_s(s1xc - s2xc, compression), F_s(s1yc - s2yc, compression), s1xc, s1yc) / I1 * tinc;
 			omega2 += findTorque(F_s(s2xc - s1xc, compression), F_s(s2yc - s1yc, compression), s2xc, s2yc) / I2 * tinc;
+
+
 		}
 
 		s1x += v1x * tinc;

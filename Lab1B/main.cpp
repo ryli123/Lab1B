@@ -1,13 +1,11 @@
-/*
+/* 
  * Ryan Li, Justin Ye, Simhon Chourasia, Eric Zhao, Austin Lin
- * Lab 1B - Collisions
- * 15 Oct 19
+ * Lab 1A - Collisions Simulator
+ * SPH4U0
  *
- * Simulates the collision of two spherical objects and computes
- * position/rotation over time.
+ * Simulates the collision of two circular objects as an elastic
+ * collision with spring forces regressed by experiment.
  */
-
-#define _USE_MATH_DEFINES
 
 #include <iostream>
 #include <cmath>
@@ -20,8 +18,7 @@
 #endif
 
 using namespace std;
-constexpr double pi = M_PI;	// renaming M_PI constant to pi (3.14...)
-const double epsilon = 0.001; // margin of error
+const double epsilon = 0.001; // default margin of error
 
 //magnitude for single vector
 double findMagnitude(double x, double y)
@@ -35,7 +32,9 @@ double findMagnitude(double x, double y, double z)
 	return (sqrt(x * x + y * y + z*z));
 }
 
+// solves for magnitude of displacement with components
 double findMagnitude(double s1x, double s1y, double s2x, double s2y) {
+	// Uses the form sqrt(a^2 + b^2)
 	return (sqrt((s1x - s2x) * (s1x - s2x) + (s1y - s2y) * (s1y - s2y)));
 }
 
@@ -45,14 +44,16 @@ double ballMoI(double r, double m)
 	return(2 * m * r * r / 5);
 }
 
-//magnitude of cross product of two vectors in 2d
+// magnitude of cross product of two vectors in 2d
 double crossProductMag(double x1, double y1, double x2, double y2)
 {
 	return(findMagnitude(y1 - y2, -(x1 - x2), x1 * y2 - y1 - x2));
 }
 
+// returns whether spheres have collided by comparing displacement to radii
 bool spherecollided2d(double sx1, double sy1, double sx2, double sy2, double radius) {
-	return (findMagnitude(sx1, sy1, sx2, sy2) < 2 * radius + epsilon); // note that magnitude is always positive
+	// note that magnitude is always positive
+	return (findMagnitude(sx1, sy1, sx2, sy2) < 2 * radius + epsilon); 
 }
 
 // the function for the force exerted by the spring, for one dimension
@@ -62,9 +63,8 @@ double F_s(double displacement, double compression) {
 
 	/* Solves for spring force acting on ball using F_s = -kx.
 	 * Solves for one desired component only, and displacement
-	 * is given for the component. If displacement between balls
-	 * is 0, no force in that direction; otherwise, sign of the 
-	 * displacement gives direction of force. */
+	 * is given for the component. No force if displacement 0; 
+	 * otherwise, sign of the displacement gives direction of force. */
 	if (displacement == 0)
 		return 0;
 	else {

@@ -18,7 +18,8 @@
 #endif
 
 using namespace std;
-const double epsilon = 0.001; // default margin of error
+const double pi = atan(1) * 4;
+const double epsilon = 1E-8; // default margin of error
 
 // magnitude for 2D vector
 double findMagnitude(double x, double y) {
@@ -54,22 +55,13 @@ bool spherecollided2d(double sx1, double sy1, double sx2, double sy2, double rad
 }
 
 // the function for the force exerted by the spring, for one dimension
-double F_s(double displacement, double compression) {
+double F_s(double compression) {
 	// spring function found by regression
 	//double k = 11900 * compression + 830;
+	double k = 1000000;
 
-	//double k = 1000000;
-
-	/* Solves for spring force acting on ball using F_s = -kx.
-	 * Solves for one desired component only, and displacement
-	 * is given for the component. No force if displacement 0; 
-	 * otherwise, sign of the displacement gives direction of force. */
-	if (displacement == 0)
-		return 0;
-	else {
-		int direction = displacement / fabs(displacement);	// gives sign
-		return -1 * direction * 11000*compression*compression+860*compression;
-	}
+	// Calculates in the form F_s = -kx. Compression parameter is in component form.
+	return -1 * k * compression;
 }
 
 double findTorque(double Fx, double Fy, double rx, double ry)
@@ -95,6 +87,31 @@ double findtinc(double distance, double v_magnitude, double radius, bool collide
 	return dt;
 }
 
+// finds angle between centre of the balls
+double findAngle(double s1x, double s1y, double s2x, double s2y) {
+	double y = s2y - s1y; //delta y
+	double x = s2x - s1x; //delta x
+	double angle = 0;
+
+	/* Finds the angle using arctan(y/x). However, it must take in special
+	 * cases; when x = 0 arctan does not function, and in other cases arctan
+	 * will only give the beta value and must be adjusted by some factor of pi. */
+	if (x == 0) {
+		if (y > 0)	// 90 deg
+			angle = pi / 2;
+		else if (y < 0)	// 270 deg
+			angle = 3 * pi / 2;
+	} else {
+		if (x < 0)	// quadrants 2 & 3
+			angle = atan(y / x) + pi;
+		else if (x > 0 && y < 0)	// quadrant 4
+			angle = atan(y / x) + 2 * pi;
+		else if (x > 0 && y > 0)
+			angle = atan(y / x);
+	}
+	return angle;
+}
+
 // truncates value to 3 decimal places
 double truncate(double x) {
 	return round(x * 1000) / 1000;
@@ -102,33 +119,24 @@ double truncate(double x) {
 
 // with a spring, using just basic kinematics
 void springcollision() {
-	double compression = 0;
-
-	//double m1 = 5, m2 = 2.5;	// kg
-	//double radius = 1;	// m
-	// sample 1d collision with stationary target; SI units
-
-	//sample 1D
-	double m1 = 2, m2 = 6;
-	double radius = 1;
-	double s1x = 0, s1y = 0;
-	double s2x = 5, s2y = 0;
-	double v1x = 12, v1y = 0;
-	double v2x = 0, v2y = 0;
-	double tinc = 0.001;
-	//Expect v1fx = -6, v2fx as 6 
-	
+	////sample 1D
+	//double m1 = 2, m2 = 6;
+	//double radius = 1;
+	//double s1x = 0, s1y = 0;
+	//double s2x = 5, s2y = 0;
+	//double v1x = 12, v1y = 0;
+	//double v2x = 0, v2y = 0;
+	////Expect v1fx = -6, v2fx as 6 
 
 	//sample 2D static target
-	/*
 	double m1 = 2, m2 = 2;
 	double radius = 1;
 	double s1x = 0, s1y = 0;
 	double s2x = 3, s2y = 1.732;
 	double v1x = 2.2, v1y = 0;
 	double v2x = 0, v2y = 0;
-	double tinc = 0.001;*/
 	//Expect v1f to be 1.9, theta = -30, v2fx as 1.1, theta = 60
+	
 
 	//sample 2D total
 	/*double m1 = 2, m2 = 2;
@@ -136,12 +144,13 @@ void springcollision() {
 	double s1x = -3.83, s1y = 3.214;
 	double s2x = -3.83, s2y = -3.214;
 	double v1x = 3.064, v1y = -2.571;
-	double v2x = 3.064, v2y = 2.571;
-	double tinc = 0.001;*/
+	double v2x = 3.064, v2y = 2.571;*/
 	//expect symmetry on final velocities
 	
+	double compression = 0;
+	double angle1 = 0, angle2 = 0;
 
-	//double tinc = 0.001;	// default time increment
+	double tinc = 0.001;	// default time increment
 	double t = 0, printinc = 10;	// prints when printinc = 10;
 	double tcollision = 3000;
 	bool collision = false;
@@ -165,17 +174,22 @@ void springcollision() {
 			// take current position to test direction of spring force
 			double s1xc = s1x, s1yc = s1y, s2xc = s2x, s2yc = s2y;
 
-			s1x += 0.5 * F_s(s1xc-s2xc, compression) / m1 * tinc * tinc;
-			s1y += 0.5 * F_s(s1yc-s2yc, compression) / m1 * tinc * tinc;
-			s2x += 0.5 * F_s(s2xc-s1xc, compression) / m2 * tinc * tinc;
-			s2y += 0.5 * F_s(s2yc-s1yc, compression) / m2 * tinc * tinc;
+			// solve for compression with direction relative to fiducials
+			compression = (findMagnitude(s1xc, s1yc, s2xc, s2yc) - 2 * radius) / 2;
+			angle1 = findAngle(s1x, s1y, s2x, s2y);
+			angle2 = findAngle(s2x, s2y, s1x, s1y);
+
+			s1x += 0.5 * F_s(compression * cos(angle1)) / m1 * tinc * tinc;
+			s1y += 0.5 * F_s(compression * sin(angle1)) / m1 * tinc * tinc;
+			s2x += 0.5 * F_s(compression * cos(angle2)) / m2 * tinc * tinc;
+			s2y += 0.5 * F_s(compression * sin(angle2)) / m2 * tinc * tinc;
 
 			// assuming that both balls are compressed the same amount
 			compression = (findMagnitude(s1x, s1y, s2x, s2y) - 2 * radius) / 2;
-			v1x += tinc * F_s(s1xc-s2xc, compression) / m1;
-			v1y += tinc * F_s(s1yc-s2yc, compression) / m1;
-			v2x += tinc * F_s(s2xc-s1xc, compression) / m2;
-			v2y += tinc * F_s(s2yc-s1yc, compression) / m2;
+			v1x += tinc * F_s(compression * cos(angle1)) / m1;
+			v1y += tinc * F_s(compression * sin(angle1)) / m1;
+			v2x += tinc * F_s(compression * cos(angle2)) / m2;
+			v2y += tinc * F_s(compression * sin(angle2)) / m2;
 		}
 
 		s1x += v1x * tinc;
@@ -210,8 +224,6 @@ void springcollision() {
 
 // glancing collision, end rotation, no initial rotation
 void glancingcollision() {
-	double compression = 0;
-
 	double m1 = 2, m2 = 6;
 	double s1x = 0, s1y = 0;
 	double s2x = 5, s2y = 0;
@@ -226,6 +238,8 @@ void glancingcollision() {
 	double t = 0, printinc = 10;
 	double tcollision = 3000;
 	bool collision = false;
+	double compression = 0;
+	double angle1 = 0, angle2 = 0;
 	
 	/* Set up .csv file to be viewed in excel and allow
 	 * data set to be manipulated and made into graphs. */
@@ -246,21 +260,26 @@ void glancingcollision() {
 			// take current position to test direction of spring force
 			double s1xc = s1x, s1yc = s1y, s2xc = s2x, s2yc = s2y;
 
-			s1x += 0.5 * F_s(s1xc - s2xc, compression) / m1 * tinc * tinc;
-			s1y += 0.5 * F_s(s1yc - s2yc, compression) / m1 * tinc * tinc;
-			s2x += 0.5 * F_s(s2xc - s1xc, compression) / m2 * tinc * tinc;
-			s2y += 0.5 * F_s(s2yc - s1yc, compression) / m2 * tinc * tinc;
+			// solve for compression with direction relative to fiducials
+			compression = (findMagnitude(s1xc, s1yc, s2xc, s2yc) - 2 * radius) / 2;
+			angle1 = findAngle(s1x, s1y, s2x, s2y);
+			angle2 = findAngle(s2x, s2y, s1x, s1y);
+
+			s1x += 0.5 * F_s(compression * cos(angle1)) / m1 * tinc * tinc;
+			s1y += 0.5 * F_s(compression * sin(angle1)) / m1 * tinc * tinc;
+			s2x += 0.5 * F_s(compression * cos(angle2)) / m2 * tinc * tinc;
+			s2y += 0.5 * F_s(compression * sin(angle2)) / m2 * tinc * tinc;
 
 			// assuming that both balls are compressed the same amount
 			compression = (findMagnitude(s1x, s1y, s2x, s2y) - 2 * radius) / 2;
-			v1x += tinc * F_s(s1xc - s2xc, compression) / m1;
-			v1y += tinc * F_s(s1yc - s2yc, compression) / m1;
-			v2x += tinc * F_s(s2xc - s1xc, compression) / m2;
-			v2y += tinc * F_s(s2yc - s1yc, compression) / m2;
+			v1x += tinc * F_s(compression * cos(angle1)) / m1;
+			v1y += tinc * F_s(compression * sin(angle1)) / m1;
+			v2x += tinc * F_s(compression * cos(angle2)) / m2;
+			v2y += tinc * F_s(compression * sin(angle2)) / m2;
 
 			// note that by conservation of angular momentum, m1 * omega1  + m2 * omega2 is invariant
-			omega1 += findTorque(F_s(s1xc - s2xc, compression), F_s(s1yc - s2yc, compression), s1xc, s1yc) / I1 * tinc;
-			omega2 += findTorque(F_s(s2xc - s1xc, compression), F_s(s2yc - s1yc, compression), s2xc, s2yc) / I2 * tinc;
+			omega1 += findTorque(F_s(compression * cos(angle1)), F_s(compression * sin(angle1)), s1xc, s1yc) / I1 * tinc;
+			omega2 += findTorque(F_s(compression * cos(angle2)), F_s(compression * sin(angle2)), s2xc, s2yc) / I2 * tinc;
 
 
 		}

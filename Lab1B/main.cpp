@@ -144,8 +144,8 @@ void glancingcollision() {
 	double v1x = 4, v1y = -6;
 	double v2x = 4, v2y = 6;
 	double radius = 1;
-	double i1 = ballMoI(m1, radius);
-	double i2 = ballMoI(m2, radius);
+	double I1 = ballMoI(m1, radius);
+	double I2 = ballMoI(m2, radius);
 	double omega1 = 0, omega2 = 0;
 	double tinc = 0.001;
 
@@ -177,6 +177,10 @@ void glancingcollision() {
 			v1y += tinc * F_s(s1yc - s2yc, compression) / m1;
 			v2x += tinc * F_s(s2xc - s1xc, compression) / m2;
 			v2y += tinc * F_s(s2yc - s1yc, compression) / m2;
+
+			// note that by conservation of angular momentum, m1 * omega1  + m2 * omega2 is invariant
+			omega1 += findTorque(F_s(s1xc - s2xc, compression), F_s(s1yc - s2yc, compression), s1xc, s1yc) / I1 * tinc;
+			omega2 += findTorque(F_s(s2xc - s1xc, compression), F_s(s2yc - s1yc, compression), s2xc, s2yc) / I2 * tinc;
 		}
 
 		s1x += v1x * tinc;
@@ -189,9 +193,10 @@ void glancingcollision() {
 			cout << "s1: " << s1x << ", " << s1y << "\ns2: " << s2x << ", " << s2y << '\n';
 			cout << "v1: " << v1x << ", " << v1y << "\nv2: " << v2x << ", " << v2y << '\n';
 			cout << "distance: " << findMagnitude(s1x, s1y, s2x, s2y) << '\n';
-
+			cout << "total kinetic energy: " << 0.5*(m1 * sqrt(v1x * v1x + v1y * v1y) + m2 * sqrt(v2x * v2x + v2y * v2y) + 0.4 * radius * radius * (m1 * omega1 * omega1 + m2 * omega2 * omega2)) << '\n';
 			printinc = 0;
 		}
+
 
 	} while (t < tcollision + 1);
 }
@@ -199,7 +204,7 @@ void glancingcollision() {
 int main() {
 	ofstream table; // for csv record of data
 
-	springcollision();
+	glancingcollision();
 
 
 	return 0;

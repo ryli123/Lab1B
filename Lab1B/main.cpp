@@ -61,7 +61,7 @@ double F_s(double compression) {
 	//double k = 1000000;
 
 	// Calculates in the form F_s = -kx. Compression parameter is in component form.
-	return -1 * 11000 * compression * compression + 850*compression;
+	return -1 * (11000 * compression * compression + 850 * compression);
 }
 
 double findTorque(double Fx, double Fy, double rx, double ry)

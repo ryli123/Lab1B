@@ -76,6 +76,22 @@ double findTorque(double Fx, double Fy, double rx, double ry)
 	return findMagnitude(rx, ry) * findMagnitude(Fx, Fy) * sinT;
 }
 
+// returns appropriate time increment
+double findtinc(double s_magnitude, double v_magnitude) {
+	/* Considers the ratio of displacement to velocity of two balls. If displacement 
+	 * between balls is high and velocity is low, dt is increased to skip through 
+	 * parts before/after collision; when colliding, displacement becomes relatively 
+	 * minute and allows for high resolution of the balls' movements when in contact. */
+	double dt = s_magnitude / v_magnitude / 500;
+	
+	if (dt > 0.001)		// set upper bound 
+		dt = 0.001;
+	else if (dt < 0.00001)
+		dt = 0.00001;
+
+	return dt;
+}
+
 // with a spring, using just basic kinematics
 void springcollision() {
 	double compression = 0;
@@ -89,28 +105,33 @@ void springcollision() {
 	double v2x = 4, v2y = 6;
 	*/
 
-	double m1 = 2, m2 = 6;	// kg
-	double radius = 1;	// m
+	// sample 1d collision with stationary target; SI units
+	double m1 = 2, m2 = 6;
+	double radius = 1;
 	double s1x = 0, s1y = 0;
 	double s2x = 5, s2y = 0;
 	double v1x = 12, v1y = 0;
 	double v2x = 0, v2y = 0;
-	double tinc = 0.001;
 
-	double t = 0, printinc = 9;
+	double tinc = 0.001;	// default time increment
+	double t = 0, printinc = 9;	// print only every 9 seconds
 	double tcollision = 3000;
 	bool collision = false;
+
 	do {
+		tinc = findtinc(findMagnitude(s1x, s1y, s2x, s2y), findMagnitude(v1x, v1y, v2x, v2y));
 		t += tinc;
 		printinc++;
 
 		// check if collided
 		if (spherecollided2d(s1x, s1y, s2x, s2y, radius)) {
+			
 			if (!collision) {
 				cout << "\nCollided.\n";
 				tcollision = t;
 				collision = true;
 			}
+			
 			// take current position to test direction of spring force
 			double s1xc = s1x, s1yc = s1y, s2xc = s2x, s2yc = s2y;
 
@@ -125,17 +146,6 @@ void springcollision() {
 			v1y += tinc * F_s(s1yc-s2yc, compression) / m1;
 			v2x += tinc * F_s(s2xc-s1xc, compression) / m2;
 			v2y += tinc * F_s(s2yc-s1yc, compression) / m2;
-
-			// changing tinc based on how close it is
-			tinc = findMagnitude(s1x, s1y, s2x, s2y) / findMagnitude(v1x, v1y, v2x, v2y) / 500;
-			if (tinc > 0.001)
-			{
-				tinc = 0.001;
-			}
-			else if (tinc < 0.00001)
-			{
-				tinc = 0.00001;
-			}
 		}
 
 		s1x += v1x * tinc;
@@ -173,6 +183,15 @@ void glancingcollision() {
 	double t = 0, printinc = 9;
 	double tcollision = 3000;
 	bool collision = false;
+	
+	/* Set up .csv file to be viewed in excel and allow
+	 * data set to be manipulated and made into graphs. */
+	ofstream table;
+	table.open("table.csv");
+	table << "t,sx1,sy1,sx2,sy2,vx1,vy1,vx2,vy2,angx1,angx2,angv1,angv2\n";
+
+	/* Loop runs until a collision occurs and then runs for another second
+	 * to display data after collision. */
 	do {
 		t += tinc;
 		printinc++;
@@ -218,6 +237,10 @@ void glancingcollision() {
 			cout << "distance: " << findMagnitude(s1x, s1y, s2x, s2y) << '\n';
 			cout << "total kinetic energy: " << 0.5*(m1 * sqrt(v1x * v1x + v1y * v1y) + m2 * sqrt(v2x * v2x + v2y * v2y) + 0.4 * radius * radius * (m1 * omega1 * omega1 + m2 * omega2 * omega2)) << '\n';
 			printinc = 0;
+		}
+
+		if (printinc == 10) {
+
 		}
 
 

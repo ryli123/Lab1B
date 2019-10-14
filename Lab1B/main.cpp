@@ -133,11 +133,11 @@ void springcollision() {
 void glancingcollision() {
 	double compression = 0;
 
-	double m1 = 1, m2 = 1;
-	double s1x = -3, s1y = 4;
-	double s2x = -3, s2y = -4;
-	double v1x = 4, v1y = -6;
-	double v2x = 4, v2y = 6;
+	double m1 = 2, m2 = 6;
+	double s1x = 0, s1y = 0;
+	double s2x = 5, s2y = 0;
+	double v1x = 12, v1y = 0;
+	double v2x = 0, v2y = 0;
 	double radius = 1;
 	double I1 = ballMoI(m1, radius);
 	double I2 = ballMoI(m2, radius);

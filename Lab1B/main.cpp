@@ -79,33 +79,28 @@ double findTorque(double Fx, double Fy, double rx, double ry)
 }
 
 // returns appropriate time increment
-double findtinc(double s_magnitude, double v_magnitude) {
-	/* Considers the ratio of displacement to velocity of two balls. If displacement 
-	 * between balls is high and velocity is low, dt is increased to skip through 
-	 * parts before/after collision; when colliding, displacement becomes relatively 
-	 * minute and allows for high resolution of the balls' movements when in contact. */
-	double dt = s_magnitude / v_magnitude / 500;
+double findtinc(double s_magnitude, double radius) {
+	/* Considers the displacement of two balls. If displacement between balls is high, 
+	 * dt is increased to skip through parts before/after collision; when colliding, 
+	 * allows for high resolution of the ball's motion when in contact. */
+	double dt = pow(s_magnitude / (2 * radius), 3) / 5000;
 	
-	if (dt > 0.001)			// upper bound 
-		dt = 0.001;
-	else if (dt < 0.00001)	// lower bound
-		dt = 0.00001;
+	if (dt > 0.01)			// upper bound 
+		dt = 0.01;
+	else if (dt < 0.0001)	// lower bound
+		dt = 0.0001;
 
 	return dt;
+}
+
+// truncates value to 3 decimal places
+double truncate(double x) {
+	return round(x * 1000) / 1000;
 }
 
 // with a spring, using just basic kinematics
 void springcollision() {
 	double compression = 0;
-
-	// SI units
-	/*double m1 = 0.0195, m2 = 0.0195;	// kg
-	double radius = 0.0307;	// m
-	double s1x = 3, s1y = -4;
-	double s2x = -3, s2y = -4;
-	double v1x = -4, v1y = 6;
-	double v2x = 4, v2y = 6;
-	*/
 
 	//double m1 = 5, m2 = 2.5;	// kg
 	//double radius = 1;	// m
@@ -116,17 +111,23 @@ void springcollision() {
 	double s2x = 3, s2y = 1;
 	double v1x = 4.5, v1y = 0;
 	double v2x = 0, v2y = 0;
-	double tinc = 0.00002;
+	double tinc = 0.001;
 
 	//double tinc = 0.001;	// default time increment
 	double t = 0, printinc = 10;	// prints when printinc = 10;
 	double tcollision = 3000;
 	bool collision = false;
 
+	/* Set up .csv file to be viewed in excel and allow
+	 * data set to be manipulated and made into graphs. */
+	ofstream table;
+	table.open("springcollision.csv");
+	table << "t,sx1,sy1,sx2,sy2,vx1,vy1,vx2,vy2,distance\n";
+
 	do {
 		// check if collided
 		if (spherecollided2d(s1x, s1y, s2x, s2y, radius)) {
-			
+			// sets collision time once
 			if (!collision) {
 				cout << "\nCollided.\n";
 				tcollision = t;
@@ -155,18 +156,28 @@ void springcollision() {
 		s2y += v2y * tinc;
 
 		if (printinc == 10) {
-			cout << "time: " << t << "seconds\n";
-			cout << "s1: " << s1x << ", " << s1y << "\ns2: " << s2x << ", " << s2y << '\n';
-			cout << "v1: " << v1x << ", " << v1y << "\nv2: " << v2x << ", " << v2y << '\n';
-			cout << "distance: " << findMagnitude(s1x, s1y, s2x, s2y) << '\n';
+			table << truncate(t) << ",";		// t
+			table << truncate(s1x) << ","	// displacement
+				<< truncate(s1y) << ","
+				<< truncate(s2x) << ","
+				<< truncate(s2y) << ",";
+			table << truncate(v1x) << ","	// velocity
+				<< truncate(v1y) << ","
+				<< truncate(v2x) << ","
+				<< truncate(v2y) << ",";
+			table << truncate(findMagnitude(s1x, s1y, s2x, s2y)) << ",";	// distance
+			table << "\n";
 
 			printinc = 0;
 		}
 
-		tinc = findtinc(findMagnitude(s1x, s1y, s2x, s2y), findMagnitude(v1x, v1y, v2x, v2y));
+		tinc = findtinc(findMagnitude(s1x, s1y, s2x, s2y), radius);
 		t += tinc;
 		printinc++;
+
 	} while (t < tcollision + 1);
+
+	table.close();
 }
 
 // glancing collision, end rotation, no initial rotation
@@ -257,8 +268,8 @@ void glancingcollision() {
 }
 
 int main() {
-	//springcollision();
-	glancingcollision();
+	springcollision();
+	//glancingcollision();
 
 	return 0;
 }

@@ -107,8 +107,8 @@ void springcollision() {
 	double v2x = 4, v2y = 6;
 	*/
 
-	double m1 = 5, m2 = 2.5;	// kg
-	double radius = 1;	// m
+	//double m1 = 5, m2 = 2.5;	// kg
+	//double radius = 1;	// m
 	// sample 1d collision with stationary target; SI units
 	double m1 = 2, m2 = 6;
 	double radius = 1;
@@ -118,7 +118,7 @@ void springcollision() {
 	double v2x = 0, v2y = 0;
 	double tinc = 0.00002;
 
-	double tinc = 0.001;	// default time increment
+	//double tinc = 0.001;	// default time increment
 	double t = 0, printinc = 10;	// prints when printinc = 10;
 	double tcollision = 3000;
 	bool collision = false;
@@ -184,22 +184,19 @@ void glancingcollision() {
 	double omega1 = 0, omega2 = 0;
 	double tinc = 0.001;
 
-	double t = 0, printinc = 9;
+	double t = 0, printinc = 10;
 	double tcollision = 3000;
 	bool collision = false;
 	
 	/* Set up .csv file to be viewed in excel and allow
 	 * data set to be manipulated and made into graphs. */
 	ofstream table;
-	table.open("table.csv");
-	table << "t,sx1,sy1,sx2,sy2,vx1,vy1,vx2,vy2,angx1,angx2,angv1,angv2\n";
+	table.open("newtable.csv");
+	table << "t,sx1,sy1,sx2,sy2,vx1,vy1,vx2,vy2,distance,total KE\n";
 
 	/* Loop runs until a collision occurs and then runs for another second
 	 * to display data after collision. */
 	do {
-		t += tinc;
-		printinc++;
-
 		// check if collided
 		if (spherecollided2d(s1x, s1y, s2x, s2y, radius)) {
 			if (!collision) {
@@ -235,25 +232,33 @@ void glancingcollision() {
 		s2y += v2y * tinc;
 
 		if (printinc == 10) {
-			cout << "time: " << t << "seconds\n";
-			cout << "s1: " << s1x << ", " << s1y << "\ns2: " << s2x << ", " << s2y << '\n';
-			cout << "v1: " << v1x << ", " << v1y << "\nv2: " << v2x << ", " << v2y << '\n';
-			cout << "distance: " << findMagnitude(s1x, s1y, s2x, s2y) << '\n';
-			cout << "total kinetic energy: " << 0.5*(m1 * sqrt(v1x * v1x + v1y * v1y) + m2 * sqrt(v2x * v2x + v2y * v2y) + 0.4 * radius * radius * (m1 * omega1 * omega1 + m2 * omega2 * omega2)) << '\n';
-			printinc = 0;
+			table	<< round(t * 1000) / 1000 << ",";	// t
+			table	<< round(s1x * 1000) / 1000 << ","	// displacement
+					<< round(s1y * 1000) / 1000 << "," 
+					<< round(s2x * 1000) / 1000 << "," 
+					<< round(s2y * 1000) / 1000 << ",";
+			table	<< round(v1x * 1000) / 1000 << ","	// velocity
+					<< round(v1y * 1000) / 1000 << "," 
+					<< round(v2x * 1000) / 1000 << "," 
+					<< round(v2y * 1000) / 1000 << ",";
+			table	<< round(findMagnitude(s1x, s1y, s2x, s2y) * 1000) / 1000 << ",";	// distance
+			table	<< round(0.5 * (m1 * sqrt(v1x * v1x + v1y * v1y)	// kinetic energy
+					+ m2 * sqrt(v2x * v2x + v2y * v2y) 
+					+ 0.4 * radius * radius * (m1 * omega1 * omega1 + m2 * omega2 * omega2)) * 1000) / 1000 << ",";
+			table	<< "\n";
+			printinc = 0; //reset increment to 0
 		}
 
-		if (printinc == 10) {
-
-		}
-
-
+		t += tinc;
+		printinc++;
 	} while (t < tcollision + 1);
+
+	table.close();
 }
 
 int main() {
-	springcollision();
-	//glancingcollision();
+	//springcollision();
+	glancingcollision();
 
 	return 0;
 }

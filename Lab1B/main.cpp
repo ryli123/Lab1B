@@ -58,10 +58,10 @@ bool spherecollided2d(double sx1, double sy1, double sx2, double sy2, double rad
 double F_s(double compression) {
 	// spring function found by regression
 	//double k = 11900 * compression + 830;
-	double k = 1000000;
+	//double k = 1000000;
 
 	// Calculates in the form F_s = -kx. Compression parameter is in component form.
-	return -1 * k * compression;
+	return -1 * 11000 * compression * compression + 850*compression;
 }
 
 double findTorque(double Fx, double Fy, double rx, double ry)
@@ -120,21 +120,21 @@ double truncate(double x) {
 // with a spring, using just basic kinematics
 void springcollision() {
 	////sample 1D
-	//double m1 = 2, m2 = 6;
-	//double radius = 1;
-	//double s1x = 0, s1y = 0;
-	//double s2x = 5, s2y = 0;
-	//double v1x = 12, v1y = 0;
-	//double v2x = 0, v2y = 0;
+	double m1 = 2, m2 = 6;
+	double radius = 1;
+	double s1x = 0, s1y = 0;
+	double s2x = 5, s2y = 0;
+	double v1x = 12, v1y = 0;
+	double v2x = 0, v2y = 0;
 	////Expect v1fx = -6, v2fx as 6 
 
-	//sample 2D static target
-	double m1 = 2, m2 = 2;
+	//sample 2D static target 
+	/*double m1 = 2, m2 = 2;
 	double radius = 1;
 	double s1x = 0, s1y = 0;
 	double s2x = 3, s2y = 1.732;
 	double v1x = 2.2, v1y = 0;
-	double v2x = 0, v2y = 0;
+	double v2x = 0, v2y = 0; */
 	//Expect v1f to be 1.9, theta = -30, v2fx as 1.1, theta = 60
 	
 

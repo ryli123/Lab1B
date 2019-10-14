@@ -206,6 +206,5 @@ int main() {
 
 	glancingcollision();
 
-
 	return 0;
 }

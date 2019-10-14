@@ -60,6 +60,10 @@ double F_s(double displacement, double compression) {
 	// spring function found by regression
 	double k = 11900 * compression + 830;
 
+	/* Calculates the spring force acting on the ball using F_s = -kx.
+	 * Will only calculate for either the x or y component. If displacement
+	 * in the respective component is 0 then there is no force; otherwise 
+	 * the sign of the displacement will give direction of the force. */
 	if (displacement == 0)
 		return 0;
 	else {
@@ -138,12 +142,12 @@ void springcollision() {
 void glancingcollision() {
 	double compression = 0;
 
-	double m1 = 1, m2 = 1;
+	double m1 = 0.0195, m2 = 0.0195;
+	double radius = 0.0307;
 	double s1x = -3, s1y = 4;
 	double s2x = -3, s2y = -4;
 	double v1x = 4, v1y = -6;
 	double v2x = 4, v2y = 6;
-	double radius = 1;
 	double I1 = ballMoI(m1, radius);
 	double I2 = ballMoI(m2, radius);
 	double omega1 = 0, omega2 = 0;

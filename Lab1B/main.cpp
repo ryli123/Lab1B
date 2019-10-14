@@ -79,16 +79,18 @@ double findTorque(double Fx, double Fy, double rx, double ry)
 }
 
 // returns appropriate time increment
-double findtinc(double s_magnitude, double radius) {
-	/* Considers the displacement of two balls. If displacement between balls is high, 
-	 * dt is increased to skip through parts before/after collision; when colliding, 
-	 * allows for high resolution of the ball's motion when in contact. */
-	double dt = pow(s_magnitude / (2 * radius), 3) / 5000;
+double findtinc(double distance, double v_magnitude, double radius, bool collided) {
+	double dt = 0.001;	// default dt
 	
-	if (dt > 0.01)			// upper bound 
-		dt = 0.01;
-	else if (dt < 0.0001)	// lower bound
-		dt = 0.0001;
+	/* Sets up very small dt when in contact to increase resolution of balls' motion,
+	 * sets up larger dt if not in contact to skip through other parts of motion. */
+	if (collided)
+		dt = 1E-6;
+	else {
+		/* Based on ratio of distance to velocity of ball system, ensuring that
+		 * dt is around 1/10 of the required time for the balls to contact each other. */
+		dt = (distance - 2 * radius + epsilon) / v_magnitude / 10;
+	}
 
 	return dt;
 }
@@ -171,7 +173,7 @@ void springcollision() {
 			printinc = 0;
 		}
 
-		tinc = findtinc(findMagnitude(s1x, s1y, s2x, s2y), radius);
+		tinc = findtinc(findMagnitude(s1x, s1y, s2x, s2y), findMagnitude(v1x, v1y, v2x, v2y), radius, spherecollided2d(s1x, s1y, s2x, s2y, radius));
 		t += tinc;
 		printinc++;
 

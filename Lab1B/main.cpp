@@ -46,13 +46,14 @@ bool spherecollided2d(double sx1, double sy1, double sx2, double sy2, double rad
 double F_s(double compression) {
 	// spring function found by regression
 	//double k = 11900 * compression + 830;
-	//double k = 1000000;
+	double k = 1000;
 
 	double compressAbs = fabs(compression);
 	int sign = compression / compressAbs;
 
-	// Calculates in the form F_s = -kx. Compression parameter is in component form.
-	return -1 * sign * (11000 * compressAbs * compressAbs + 850 * compressAbs);
+	// Function based on experiment, which gives the function F = -6730x^(3/2). 
+	// Compression parameter is in component form.
+	return -6730 * sign * sqrt(pow(compressAbs,3));
 }
 
 // returns appropriate time increment
@@ -105,21 +106,21 @@ double truncate(double x) {
 // with a spring, using just basic kinematics
 void springcollision() {
 	////sample 1D
-	double m1 = 2, m2 = 6;
+	/*double m1 = 2, m2 = 6;
 	double radius = 1;
 	double s1x = 0, s1y = 0;
 	double s2x = 5, s2y = 0;
 	double v1x = 12, v1y = 0;
-	double v2x = 0, v2y = 0;
+	double v2x = 0, v2y = 0;*/
 	////Expect v1fx = -6, v2fx as 6 
 
 	//sample 2D static target 
-	/*double m1 = 2, m2 = 2;
+	double m1 = 2, m2 = 2;
 	double radius = 1;
 	double s1x = 0, s1y = 0;
 	double s2x = 3, s2y = 1.732;
 	double v1x = 2.2, v1y = 0;
-	double v2x = 0, v2y = 0; */
+	double v2x = 0, v2y = 0; 
 	//Expect v1f to be 1.9, theta = -30, v2fx as 1.1, theta = 60
 	
 
@@ -136,17 +137,20 @@ void springcollision() {
 	double angle1 = 0, angle2 = 0;
 
 	double tinc = 0.001;	// default time increment
-	double t = 0, printinc = 10;	// prints when printinc = 10;
-	double tcollision = 3000;
+	double t = 0, printinc = 100;	// prints when printinc = 100;
+	double tcollision = 500;
 	bool collision = false;
 
 	/* Set up .csv file to be viewed in excel and allow
 	 * data set to be manipulated and made into graphs. */
 	ofstream table;
 	table.open("springcollision.csv");
-	table << "t,sx1,sy1,sx2,sy2,vx1,vy1,vx2,vy2,distance," 
+	table << "t,sx1,sy1,sx2,sy2,vx1,vy1,vx2,vy2,distance,"		// table headers
 		<< "compression, compression_x, compression_y, F1x, F1y, F2x, F2y\n";
 
+	/* This loop runs until the default time limit (tcollision + 1) ends
+	 * or until one second passes since the collision, allowing for some time
+	 * for the balls to collide and compress, noting the exit velocities. */
 	do {
 		// check if collided
 		if (spherecollided2d(s1x, s1y, s2x, s2y, radius)) {
@@ -165,6 +169,7 @@ void springcollision() {
 			angle1 = findAngle(s1x, s1y, s2x, s2y);
 			angle2 = findAngle(s2x, s2y, s1x, s1y);
 
+			// change positions by factor of 1/2 * at^2
 			s1x += 0.5 * F_s(compression * cos(angle1)) / m1 * tinc * tinc;
 			s1y += 0.5 * F_s(compression * sin(angle1)) / m1 * tinc * tinc;
 			s2x += 0.5 * F_s(compression * cos(angle2)) / m2 * tinc * tinc;
@@ -178,12 +183,14 @@ void springcollision() {
 			v2y += tinc * F_s(compression * sin(angle2)) / m2;
 		}
 
+		// adjust positions by velocity travelled in the dt
 		s1x += v1x * tinc;
 		s1y += v1y * tinc;
 		s2x += v2x * tinc;
 		s2y += v2y * tinc;
 
-		if (printinc == 10) {
+		// prints out all the required data onto the
+		if (printinc == 100) {
 			table << truncate(t) << ",";	// t
 			table << truncate(s1x) << ","	// displacement
 				<< truncate(s1y) << ","

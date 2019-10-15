@@ -125,18 +125,18 @@ double truncate(double x) {
 
 // with a spring, using just basic kinematics
 int main() {
-	/*sample 1D
-	double m1 = 2, m2 = 6;
-	double radius = 0.0307;
-	double s1x = 0, s1y = 0;
-	double s2x = 5, s2y = 0;
-	double v1x = 12, v1y = 0;
-	double v2x = 0, v2y = 0;
-	Expect v1fx = -6, v2fx as 6 */
+	////sample 1D
+	//double m1 = 2, m2 = 6;
+	//double radius = 1;
+	//double s1x = 0, s1y = 0;
+	//double s2x = 5, s2y = 0;
+	//double v1x = 12, v1y = 0;
+	//double v2x = 0, v2y = 0;
+	////Expect v1fx = -6, v2fx as 6
 
 	//sample 2D static target
-	double m1 = 2, m2 = 2;
-	double radius = 1;
+	double m1 = 0.0198, m2 = 0.0198;
+	double radius = 0.0307;
 	double s1x = 0, s1y = 0;
 	double s2x = 3, s2y = 1.732;
 	double v1x = 2.2, v1y = 0;
@@ -144,16 +144,15 @@ int main() {
 	//Expect v1f to be 1.9, theta = -30, v2fx as 1.1, theta = 60
 	// 1.645, -0.95, 0.55, 0.95
 	
-
-	//sample 2D total
-	/*double m1 = 0.0198, m2 = 0.0198;
-	double radius = 0.0307;
-	double s1x = -3.83, s1y = 3.214;
-	double s2x = -3.83, s2y = -3.214;
-	double v1x = 3.064, v1y = -2.571;
-	double v2x = 3.064, v2y = 2.571;*/
-	//expect symmetry on final velocities
-	// v1f 4, 40 deg, v2f 4, -40 deg
+	////sample 2D total
+	//double m1 = 0.0198, m2 = 0.0198;
+	//double radius = 0.0307;
+	//double s1x = -3.83, s1y = 3.214;
+	//double s2x = -3.83, s2y = -3.214;
+	//double v1x = 3.064, v1y = -2.571;
+	//double v2x = 3.064, v2y = 2.571;
+	////expect symmetry on final velocities
+	//// v1f 4, 40 deg, v2f 4, -40 deg
 	
 	double compression = 0;
 	double angle1 = 0, angle2 = 0;
@@ -166,7 +165,7 @@ int main() {
 	/* Set up .csv file to be viewed in excel and allow
 	 * data set to be manipulated and made into graphs. */
 	ofstream table;
-	table.open("springcollision.csv");
+	table.open("2dmoving.csv");
 	table << "t,sx1,sy1,sx2,sy2,vx1,vy1,v1,vAngle1,vx2,vy2,v2,vAngle2,distance,\n";
 
 	/* This loop runs until the default time limit (tcollision + 1) ends

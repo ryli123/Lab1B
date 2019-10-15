@@ -71,7 +71,6 @@ double findtinc(double distance, double v_magnitude, double radius, bool collide
 }
 
 // finds angle between centre of the balls
-
 double findAngle(double s1x, double s1y, double s2x, double s2y) {
 	double y = s1y - s2y; //delta y
 	double x = s1x - s2x; //delta x

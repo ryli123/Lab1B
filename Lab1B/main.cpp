@@ -48,8 +48,11 @@ double F_s(double compression) {
 	//double k = 11900 * compression + 830;
 	//double k = 1000000;
 
+	double compressAbs = fabs(compression);
+	int sign = compression / compressAbs;
+
 	// Calculates in the form F_s = -kx. Compression parameter is in component form.
-	return -1 * (11000 * compression * compression - 850 * compression);
+	return -1 * sign * (11000 * compressAbs * compressAbs + 850 * compressAbs);
 }
 
 // returns appropriate time increment

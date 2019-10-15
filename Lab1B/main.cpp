@@ -126,31 +126,31 @@ double truncate(double x) {
 // with a spring, using just basic kinematics
 int main() {
 	////sample 1D
-	//double m1 = 2, m2 = 6;
-	//double radius = 1;
-	//double s1x = 0, s1y = 0;
-	//double s2x = 5, s2y = 0;
-	//double v1x = 12, v1y = 0;
-	//double v2x = 0, v2y = 0;
+	/*double m1 = 2, m2 = 6;
+	double radius = 1;
+	double s1x = 0, s1y = 0;
+	double s2x = 5, s2y = 0;
+	double v1x = 12, v1y = 0;
+	double v2x = 0, v2y = 0;*/
 	////Expect v1fx = -6, v2fx as 6
 
 	//sample 2D static target
 	double m1 = 0.0198, m2 = 0.0198;
 	double radius = 0.0307;
 	double s1x = 0, s1y = 0;
-	double s2x = 3, s2y = 1.732;
+	double s2x = 3, s2y = 0.0518;
 	double v1x = 2.2, v1y = 0;
 	double v2x = 0, v2y = 0;
 	//Expect v1f to be 1.9, theta = -30, v2fx as 1.1, theta = 60
 	// 1.645, -0.95, 0.55, 0.95
 	
 	////sample 2D total
-	//double m1 = 0.0198, m2 = 0.0198;
-	//double radius = 0.0307;
-	//double s1x = -3.83, s1y = 3.214;
-	//double s2x = -3.83, s2y = -3.214;
-	//double v1x = 3.064, v1y = -2.571;
-	//double v2x = 3.064, v2y = 2.571;
+	/*double m1 = 0.0198, m2 = 0.0198;
+	double radius = 0.0307;
+	double s1x = -3.83, s1y = 3.214;
+	double s2x = -3.83, s2y = -3.214;
+	double v1x = 3.064, v1y = -2.571;
+	double v2x = 3.064, v2y = 2.571;*/
 	////expect symmetry on final velocities
 	//// v1f 4, 40 deg, v2f 4, -40 deg
 	
@@ -158,15 +158,17 @@ int main() {
 	double angle1 = 0, angle2 = 0;
 
 	double tinc = 0.001;	// default time increment
-	double t = 0, printinc = 100;	// prints when printinc = 100;
+	double t = 0, printinc = 40;	// prints when printinc = 40;
 	double tcollision = 500;
 	bool collision = false;
 
 	/* Set up .csv file to be viewed in excel and allow
 	 * data set to be manipulated and made into graphs. */
 	ofstream table;
-	table.open("2dmoving.csv");
-	table << "t,sx1,sy1,sx2,sy2,vx1,vy1,v1,vAngle1,vx2,vy2,v2,vAngle2,distance,\n";
+	table.open("table.csv");
+	table << "t (s),sx1 (m),sy1 (m),sx2 (m),sy2 (m),vx1 (ms^-1),vy1 (ms^-1),"
+			<< "v1 (ms^-1),vAngle1 (deg),vx2 (ms^-1),vy2 (ms^-1),v2 (ms^-1),"
+			<< "vAngle2 (deg),distance (m),\n";
 
 	/* This loop runs until the default time limit (tcollision + 1) ends
 	 * or until one second passes since the collision, allowing for some time
@@ -207,7 +209,7 @@ int main() {
 		s2y += v2y * tinc;
 
 		// prints out all the required data onto the csv file
-		if (printinc == 100) {
+		if (printinc == 40) {
 			table	<< truncate(t) << ","	// t
 					<< truncate(s1x) << ","	// displacement
 					<< truncate(s1y) << ","
@@ -216,11 +218,11 @@ int main() {
 					<< truncate(v1x) << ","	// velocity (cartesian and polar)
 					<< truncate(v1y) << ","
 					<< truncate(findMagnitude(v1x, v1y)) << ","
-					<< truncate(findAngle(v1x, v1y)) << ","
+					<< truncate(findAngle(v1x, v1y) * 180 / pi) << ","
 					<< truncate(v2x) << ","
 					<< truncate(v2y) << ","
 					<< truncate(findMagnitude(v2x, v2y)) << ","
-					<< truncate(findAngle(v2x, v2y)) << ","
+					<< truncate(findAngle(v2x, v2y) * 180 / pi) << ","
 					<< truncate(findMagnitude(s1x, s1y, s2x, s2y)) << ","//dist
 					<< "\n";
 

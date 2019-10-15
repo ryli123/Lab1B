@@ -115,22 +115,22 @@ void springcollision() {
 	////Expect v1fx = -6, v2fx as 6 
 
 	//sample 2D static target 
-	double m1 = 2, m2 = 2;
-	double radius = 1;
-	double s1x = 0, s1y = 0;
-	double s2x = 4, s2y = 1.63;
-	double v1x = 2.2, v1y = 0;
-	double v2x = 0, v2y = 0; 
+	//double m1 = 2, m2 = 2;
+	//double radius = 1;
+	//double s1x = 0, s1y = 0;
+	//double s2x = 4, s2y = 1.63;
+	//double v1x = 2.2, v1y = 0;
+	//double v2x = 0, v2y = 0; 
 	//Expect v1f to be 1.9, theta = -30, v2fx as 1.1, theta = 60
 	
 
 	//sample 2D total
-	/*double m1 = 2, m2 = 2;
+	double m1 = 2, m2 = 2;
 	double radius = 1;
 	double s1x = -3.83, s1y = 3.214;
 	double s2x = -3.83, s2y = -3.214;
 	double v1x = 3.064, v1y = -2.571;
-	double v2x = 3.064, v2y = 2.571;*/
+	double v2x = 3.064, v2y = 2.571;
 	//expect symmetry on final velocities
 	
 	double compression = 0;

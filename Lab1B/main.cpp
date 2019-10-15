@@ -46,14 +46,14 @@ bool spherecollided2d(double sx1, double sy1, double sx2, double sy2, double rad
 double F_s(double compression) {
 	// spring function found by regression
 	//double k = 11900 * compression + 830;
-	double k = 1000;
+	//double k = 12000;
 
 	double compressAbs = fabs(compression);
 	int sign = compression / compressAbs;
 
 	// Function based on experiment, which gives the function F = -6730x^(3/2). 
 	// Compression parameter is in component form.
-	return -6730 * sign * sqrt(pow(compressAbs,3));
+	return -6370 * sign * sqrt(pow(compressAbs,3));
 }
 
 // returns appropriate time increment
@@ -63,11 +63,11 @@ double findtinc(double distance, double v_magnitude, double radius, bool collide
 	/* Sets up very small dt when in contact to increase resolution of balls' motion,
 	 * sets up larger dt if not in contact to skip through other parts of motion. */
 	if (collided)
-		dt = 1E-6;
+		dt = 1E-5;
 	else {
 		/* Based on ratio of distance to velocity of ball system, ensuring that
 		 * dt is around 1/10 of the required time for the balls to contact each other. */
-		dt = (distance - 2 * radius + epsilon) / v_magnitude / 10;
+		dt = (distance - 2 * radius + epsilon) / v_magnitude / 50;
 	}
 
 	return dt;
@@ -107,31 +107,33 @@ double truncate(double x) {
 void springcollision() {
 	////sample 1D
 	/*double m1 = 2, m2 = 6;
-	double radius = 1;
+	double radius = 0.0307;
 	double s1x = 0, s1y = 0;
 	double s2x = 5, s2y = 0;
 	double v1x = 12, v1y = 0;
 	double v2x = 0, v2y = 0;*/
 	////Expect v1fx = -6, v2fx as 6 
 
-	//sample 2D static target 
-	double m1 = 2, m2 = 2;
-	double radius = 1;
+	//sample 2D static target
+	double m1 = 0.0198, m2 = 0.0198;
+	double radius = 0.0307;
 	double s1x = 0, s1y = 0;
-	double s2x = 3, s2y = 1.732;
+	double s2x = 3, s2y = 0.0532;
 	double v1x = 2.2, v1y = 0;
-	double v2x = 0, v2y = 0; 
+	double v2x = 0, v2y = 0;
 	//Expect v1f to be 1.9, theta = -30, v2fx as 1.1, theta = 60
+	// 1.645, -0.95, 0.55, 0.95
 	
 
 	//sample 2D total
-	/*double m1 = 2, m2 = 2;
-	double radius = 1;
+	/*double m1 = 0.0198, m2 = 0.0198;
+	double radius = 0.0307;
 	double s1x = -3.83, s1y = 3.214;
 	double s2x = -3.83, s2y = -3.214;
 	double v1x = 3.064, v1y = -2.571;
 	double v2x = 3.064, v2y = 2.571;*/
 	//expect symmetry on final velocities
+	// v1f 4, 40 deg, v2f 4, -40 deg
 	
 	double compression = 0;
 	double angle1 = 0, angle2 = 0;

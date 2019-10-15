@@ -10,12 +10,8 @@
 #include <iostream>
 #include <cmath>
 #include <fstream>
-#include "header.h"
 #include "Windows.h"
 #include <math.h>
-
-#ifndef RUN
-#endif
 
 using namespace std;
 const double pi = atan(1) * 4;
@@ -44,16 +40,14 @@ bool spherecollided2d(double sx1, double sy1, double sx2, double sy2, double rad
 
 // the function for the force exerted by the spring, for one dimension
 double F_s(double compression) {
-	// spring function found by regression
-	//double k = 11900 * compression + 830;
-	//double k = 12000;
-
+	// absval and sign of compression
 	double compressAbs = fabs(compression);
 	int sign = compression / compressAbs;
 
-	// Function based on experiment, which gives the function F = -6730x^(3/2). 
-	// Compression parameter is in component form.
-	return -6370 * sign * sqrt(pow(compressAbs,3));
+	/* Function based on experiment, which gives the function F = -(6730+-20)x^(3/2). 
+	 * Compression parameter is in component form. Can only take the sqrt of the abs val
+	 * of the compression as sqrt(-1) is not allowed; sign adjusts accordingly. */
+	return -6730 * sign * sqrt(pow(compressAbs,3));
 }
 
 // returns appropriate time increment
@@ -66,14 +60,18 @@ double findtinc(double distance, double v_magnitude, double radius, bool collide
 		dt = 1E-5;
 	else {
 		/* Based on ratio of distance to velocity of ball system, ensuring that
-		 * dt is around 1/10 of the required time for the balls to contact each other. */
+		 * dt is around 1/10 of the required time for the balls to contact each other. 
+		 * Lower bound set at 0.001. */
 		dt = (distance - 2 * radius + epsilon) / v_magnitude / 50;
+		if (dt < 1E-3) 
+			dt = 1E-3;
 	}
 
 	return dt;
 }
 
 // finds angle between centre of the balls
+
 double findAngle(double s1x, double s1y, double s2x, double s2y) {
 	double y = s1y - s2y; //delta y
 	double x = s1x - s2x; //delta x
@@ -98,27 +96,50 @@ double findAngle(double s1x, double s1y, double s2x, double s2y) {
 	return angle;
 }
 
+// overload; finds the angle of velocity
+double findAngle(double vx, double vy) {
+	double y = vy; //delta y
+	double x = vx; //delta x
+	double angle = 0;
+
+	if (x == 0) {
+		if (y > 0)					// 90 deg
+			angle = pi / 2;
+		else if (y < 0)				// 270 deg
+			angle = 3 * pi / 2;
+	}
+	else {
+		if (x < 0)					// quadrants 2 & 3
+			angle = atan(y / x) + pi;
+		else if (x > 0 && y < 0)	// quadrant 4
+			angle = atan(y / x) + 2 * pi;
+		else if (x > 0 && y > 0)	// quadrant 1
+			angle = atan(y / x);
+	}
+	return angle;
+}
+
 // truncates value to 4 decimal places
 double truncate(double x) {
 	return round(x * 10000) / 10000;
 }
 
 // with a spring, using just basic kinematics
-void springcollision() {
-	////sample 1D
-	/*double m1 = 2, m2 = 6;
+int main() {
+	/*sample 1D
+	double m1 = 2, m2 = 6;
 	double radius = 0.0307;
 	double s1x = 0, s1y = 0;
 	double s2x = 5, s2y = 0;
 	double v1x = 12, v1y = 0;
-	double v2x = 0, v2y = 0;*/
-	////Expect v1fx = -6, v2fx as 6 
+	double v2x = 0, v2y = 0;
+	Expect v1fx = -6, v2fx as 6 */
 
 	//sample 2D static target
-	double m1 = 0.0198, m2 = 0.0198;
-	double radius = 0.0307;
+	double m1 = 2, m2 = 2;
+	double radius = 1;
 	double s1x = 0, s1y = 0;
-	double s2x = 3, s2y = 0.0532;
+	double s2x = 3, s2y = 1.732;
 	double v1x = 2.2, v1y = 0;
 	double v2x = 0, v2y = 0;
 	//Expect v1f to be 1.9, theta = -30, v2fx as 1.1, theta = 60
@@ -147,8 +168,7 @@ void springcollision() {
 	 * data set to be manipulated and made into graphs. */
 	ofstream table;
 	table.open("springcollision.csv");
-	table << "t,sx1,sy1,sx2,sy2,vx1,vy1,vx2,vy2,distance,"		// table headers
-		<< "compression, compression_x, compression_y, F1x, F1y, F2x, F2y\n";
+	table << "t,sx1,sy1,sx2,sy2,vx1,vy1,v1,vAngle1,vx2,vy2,v2,vAngle2,distance,\n";
 
 	/* This loop runs until the default time limit (tcollision + 1) ends
 	 * or until one second passes since the collision, allowing for some time
@@ -162,14 +182,11 @@ void springcollision() {
 				tcollision = t;
 				collision = true;
 			}
-			
-			// take current position to test direction of spring force
-			double s1xc = s1x, s1yc = s1y, s2xc = s2x, s2yc = s2y;
 
 			// solve for compression with direction relative to fiducials
-			compression = (findMagnitude(s1xc, s1yc, s2xc, s2yc) - 2 * radius) / 2;
-			angle1 = findAngle(s1x, s1y, s2x, s2y);
-			angle2 = findAngle(s2x, s2y, s1x, s1y);
+			compression = (findMagnitude(s1x, s1y, s2x, s2y) - 2 * radius) / 2;
+			angle1 = findAngle(s1x, s1y, s2x, s2y);		// ang1 and ang2 will be
+			angle2 = findAngle(s2x, s2y, s1x, s1y);		// 180 deg apart
 
 			// change positions by factor of 1/2 * at^2
 			s1x += 0.5 * F_s(compression * cos(angle1)) / m1 * tinc * tinc;
@@ -191,41 +208,38 @@ void springcollision() {
 		s2x += v2x * tinc;
 		s2y += v2y * tinc;
 
-		// prints out all the required data onto the
+		// prints out all the required data onto the csv file
 		if (printinc == 100) {
-			table << truncate(t) << ",";	// t
-			table << truncate(s1x) << ","	// displacement
-				<< truncate(s1y) << ","
-				<< truncate(s2x) << ","
-				<< truncate(s2y) << ",";
-			table << truncate(v1x) << ","	// velocity
-				<< truncate(v1y) << ","
-				<< truncate(v2x) << ","
-				<< truncate(v2y) << ",";
-			table << truncate(findMagnitude(s1x, s1y, s2x, s2y)) << ",";	// distance
-			table << truncate(compression) << ","										// compression/force
-				<< truncate(compression * cos(angle1)) << ","
-				<< truncate(compression * sin(angle1)) << ","
-				<< truncate(F_s(compression * cos(angle1))) << ","
-				<< truncate(F_s(compression * sin(angle1))) << ","
-				<< truncate(F_s(compression * cos(angle2))) << ","
-				<< truncate(F_s(compression * sin(angle2))) << ",";
-			table << "\n";
+			table	<< truncate(t) << ","	// t
+					<< truncate(s1x) << ","	// displacement
+					<< truncate(s1y) << ","
+					<< truncate(s2x) << ","
+					<< truncate(s2y) << ","
+					<< truncate(v1x) << ","	// velocity (cartesian and polar)
+					<< truncate(v1y) << ","
+					<< truncate(findMagnitude(v1x, v1y)) << ","
+					<< truncate(findAngle(v1x, v1y)) << ","
+					<< truncate(v2x) << ","
+					<< truncate(v2y) << ","
+					<< truncate(findMagnitude(v2x, v2y)) << ","
+					<< truncate(findAngle(v2x, v2y)) << ","
+					<< truncate(findMagnitude(s1x, s1y, s2x, s2y)) << ","//dist
+					<< "\n";
 
 			printinc = 0;
 		}
 
-		tinc = findtinc(findMagnitude(s1x, s1y, s2x, s2y), findMagnitude(v1x, v1y, v2x, v2y), radius, spherecollided2d(s1x, s1y, s2x, s2y, radius));
+		// set appropriate increment and change time
+		tinc = findtinc(findMagnitude(s1x, s1y, s2x, s2y), 
+						findMagnitude(v1x, v1y, v2x, v2y), 
+						radius, 
+						spherecollided2d(s1x, s1y, s2x, s2y, radius));
 		t += tinc;
 		printinc++;
 
-	} while (t < tcollision + 1);
+	} while (t < tcollision + 1);	// ends when 1 second passed since collision
 
 	table.close();
-}
-
-int main() {
-	springcollision();
 
 	return 0;
 }
